@@ -206,10 +206,28 @@ begin
     f(x) = 2 + c + 5*x^2 - c*x^2 + x^4
     u(x) = 1-x^2
 
-    h = 10
-    grid = -1:1/h:1
+    h1 = 1 / 100
+    h2 = h1 / 2
+    h3 = h1 / 10
+    grid = -1:h1:1
+    grid2 = -1:h2:1
 
     xi = fem1d_lin_sl(f, p, q, grid)
-    plot(x -> u_h(x, xi, grid), -1:0.001:1)
-    plot!(u, -1:0.001:1)
+    xi2 = fem1d_lin_sl(f, p, q, grid2)
+    plot(x -> u_h(x, xi, grid), -1:h3:1)
+    plot!(x -> u_h(x, xi2, grid2), -1:h3:1)
+    plot!(u, -1:h3:1)
+
+    d_inf1 = 0
+    d_inf2 = 0
+    for i=-1:h3:1
+        global d_inf1 = max(d_inf1, abs(u(i) - u_h(i, xi, grid)))
+        global d_inf2 = max(d_inf2, abs(u(i) - u_h(i, xi2, grid2)))
+    end
+
+    r = log(d_inf2 / d_inf1) / log(h2 / h1)
+    println("r is")
+    println(d_inf1)
+    println(d_inf2)
+    println(r)
 end
